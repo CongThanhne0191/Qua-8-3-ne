@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Nữ Hoàng 12/10 - 8/3</title>
+
+<style>
+
+.top-message{
+max-width:900px;
+margin:20px auto 40px auto;
+background:rgba(255,255,255,0.18);
+backdrop-filter:blur(15px);
+padding:30px;
+border-radius:25px;
+font-size:20px;
+line-height:1.6;
+box-shadow:0 0 40px rgba(255,255,255,0.4);
+animation:glowBox 3s infinite alternate;
+}
+
+@keyframes glowBox{
+from{box-shadow:0 0 20px pink;}
+to{box-shadow:0 0 50px gold;}
+}
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#ff4da6,#6a5acd);
+color:white;
+overflow-x:hidden;
+text-align:center;
+}
+
+h1{
+margin:30px;
+font-size:45px;
+text-shadow:0 0 20px white,0 0 40px pink;
+}
+
+#container{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;
+padding:40px;
+max-width:1400px;
+margin:auto;
+}
+
+.card{
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+border-radius:20px;
+padding:25px;
+transition:0.4s;
+cursor:pointer;
+}
+
+.card:hover{
+transform:scale(1.08);
+box-shadow:0 0 30px hotpink;
+}
+
+.card.active{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scale(1.3);
+z-index:10;
+box-shadow:0 0 60px gold;
+}
+
+.blur{
+opacity:0.2;
+}
+
+.hidden{
+display:none;
+margin-top:15px;
+}
+
+input{
+padding:10px;
+border-radius:15px;
+border:none;
+width:80%;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+border:none;
+border-radius:20px;
+cursor:pointer;
+background:gold;
+font-weight:bold;
+}
+
+.popup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scale(0);
+background:white;
+color:#333;
+padding:30px;
+border-radius:20px;
+box-shadow:0 0 60px hotpink;
+transition:0.4s;
+z-index:20;
+width:350px;
+}
+
+.popup.show{
+transform:translate(-50%,-50%) scale(1);
+}
+
+.heart{
+position:fixed;
+top:-10px;
+animation:fall linear infinite;
+}
+
+@keyframes fall{
+to{transform:translateY(110vh);}
+}
+
+.balloon{
+position:fixed;
+bottom:-100px;
+animation:fly linear infinite;
+font-size:30px;
+}
+
+@keyframes fly{
+to{transform:translateY(-120vh);}
+}
+
+.music-btn {
+    position: fixed;
+    bottom: 20px;   /* Đổi từ top thành bottom */
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(45deg, #ff4da6, #ff66cc);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 15px pink;
+    z-index: 9999;
+}
+</style>
+</head>
+
+<body>
+
+<h1>👑 Chào mừng bạn đến với quà 8/3 của lớp 12/10 👑</h1>
+<div class="message">
+💌 Dặn dò của Công Thành:
+<br><br>
+Hãy chọn tên của bạn và nhập mật khẩu để mở quà nhé, đừng bấm sai nhe<br>
+Mật khẩu là ngày tháng năm sinh của bạn á. (ví dụ: 01012008)<br>
+Nếu muốn nghe nhạc thì bấm vào biểu tượng🎵 ở góc bên phải nhe, nếu muốn tắt thì nhấn vô lần nữa.<br>
+Công Thành cảm ơn vì bạn đã mở món quà này❤️<br>
+</div>
+
+<button class="music-btn" onclick="playMusic()">🎵</button>
+
+<audio id="bgMusic" loop>
+<source src="ting.mp3" type="audio/mpeg">
+</audio>
+<button onclick="toggleMusic()" class="music-btn">
+🎵 Mở, tắt nhạc
+</button>
+
+<div id="container"></div>
+<div class="popup" id="popup">
+<h2 id="popupName"></h2>
+<p id="popupWish"></p>
+<div id="wishBox" class="wish-box">
+
+<div id="wishBox" style="display:none;">
+    <button onclick="closeWish()">❌</button>
+    <h2 id="nameTitle"></h2>
+    <p id="wishContent"></p>
+</div>
+<p id="wishText"></p>
+
+</div>
+</div>
+
+<script>
+
+const girls=[
+{n:"Hà Võ Trâm Anh",p:"13102008",w:"Hí lu, chúc Trâm Anh 8/3 vui vẻ và luôn xinh đẹp nhé!"},
+
+{n:"Nguyễn Ngọc Xuân Anh",p:"01012008",w:"Hí, Chúc Xuân Anh luôn rạng rỡ như chính cái tên của mình – như một mùa xuân đầy năng lượng và tươi mới. Mong bạn sẽ luôn giữ được tinh thần lạc quan, dù phía trước là kỳ thi quan trọng của cuộc đời học sinh. Chúc bạn học ngày càng tốt hơn, luôn được yêu thương và trân trọng, không chỉ trong ngày 8/3 mà là tất cả những ngày sau này."},
+
+{n:"Đinh Khả Hân",p:"21032008",w:"Chúc Khả Hân có một ngày 8/3 vui vẻ bên bạn bè và người thân nhé, luôn xinh đẹp tỏa sáng như những ngôi sao nha. Mong bạn sẽ luôn giữ được sự nhiệt huyết của tuổi 18 và không ngừng cố gắng cho ước mơ của mình. Năm cuối cấp có thể áp lực, nhưng mình tin bạn đủ bản lĩnh để bước qua tất cả và tỏa sáng theo cách riêng của mình."},
+
+{n:"Nguyễn Lưu Gia Hân",p:"18112008",w:"Chúc Gia Hân một ngày 8/3 thật đặc biệt. Mong bạn luôn vui vẻ, giữ được nụ cười trên môi dù có bao nhiêu bài kiểm tra hay áp lực thi cử. Chúc bạn sẽ đạt được mục tiêu mình đặt ra và bước vào cánh cửa đại học với sự tự tin và tự hào."},
+
+{n:"Võ Ánh Hồng",p:"28082008",w:"Helu, chúc Ánh Hồng 8/3 vui vẻ nhen, phải luôn xinh đẹp Chúc Hồng luôn rực rỡ đúng như cái tên của mình. Mong bạn sẽ luôn là phiên bản tốt nhất của chính mình, dịu dàng nhưng không yếu đuối. Chúc bạn có một năm cuối cấp thật đáng nhớ và thành công."},
+
+{n:"Huỳnh Phạm Ngân Khánh",p:"15112008",w:"Chúc Ngân Khánh 8/3 vui vẻ nha. Chúc Khánh luôn giữ được sự tích cực và nguồn năng lượng riêng biệt của mình. Mong bạn sẽ luôn tin vào bản thân, dù có lúc cảm thấy mệt mỏi. Chúc bạn thi thật tốt, đạt được ước mơ và sau này nhìn lại sẽ tự hào vì đã cố gắng hết mình ở tuổi 18"},
+
+{n:"Ông Gia Linh",p:"04062008",w:"Ê, chúc Gia Linh hà mã 8/3 vui vẻ, luôn luôn đẹp gái ngầu lòi nha. Mong bạn sẽ có thật nhiều may mắn trong học tập và cuộc sống. Năm cuối cấp này, mong bạn sẽ có thật nhiều kỷ niệm đẹp cùng lớp và đạt được điều mình mong muốn. Đi ăn mì cay nè"},
+
+{n:"Trần Thị Xuân Mai",p:"07022008",w:"Hí lu, chúc Xuân Mai 8/3 vui vẻ nhen. Chúc Mai luôn tươi tắn và vui vẻ như chính mùa xuân trong tên bạn. Mong bạn sẽ luôn giữ được sự nhiệt huyết và không ngừng cố gắng. Chúc bạn thi thật tốt và bước vào tương lai với thật nhiều tự tin."},
+
+{n:"Lê Bảo Ngân",p:"05022008",w:"Hế lô, chúc Bảo Ngân 8/3 vui vẻ. Chúc Ngân luôn mạnh mẽ và tự tin vào chính mình. Mong bạn sẽ luôn trân trọng giá trị của bản thân và không bao giờ nghi ngờ khả năng của mình. Chúc bạn một năm cuối cấp thật thành công và trọn vẹn!"},
+
+{n:"Phạm Kim Ngân",p:"02012008",w:"Hello Ngân nha, chúc Ngân 8/3 vui vẻ và luôn xinh đẹp, học giỏi, tỏa sáng như những ngôi sao nhé! Chúc Kim Ngân luôn rực rỡ và hạnh phúc. Mong bạn sẽ luôn có động lực để cố gắng mỗi ngày, để khi bước qua tuổi học trò, bạn sẽ không hối tiếc vì đã bỏ lỡ điều gì."},
+
+{n:"Trần Kim Ngân",p:"27012008",w:"Hí, chúc Ngân 8/3 vui vẻ nè, luôn luôn vui vẻ và tươi cười như những bó hoa nhé! Mong bạn luôn giữ được sự lạc quan và ý chí vươn lên. Chúc bạn đạt được mục tiêu mình đã đặt ra và luôn được yêu thương."},
+
+{n:"Trần Thị Bảo Nghi",p:"13042008",w:"Híiii, chúc Bảo Nghi 8/3 vui vẻ nè, luôn luôn tươi cười và tỏa sáng như ánh mặt trời nhe. À, chúc Nghi luôn dịu dàng nhưng không kém phần mạnh mẽ. Mong bạn sẽ luôn tin vào chính mình và dũng cảm theo đuổi ước mơ. Chúc bạn một tương lai thật rộng mở nhe."},
+
+{n:"Bùi Yến Ngọc",p:"14112008",w:"Hí lu, chúc Yến Ngọc 8/3 vui vẻ nheee, luôn luôn xinh đẹp, cười tươi như những bó hoa nhé! Chúc Yến Ngọc luôn tỏa sáng và rạng rỡ. Mong bạn sẽ có một năm cuối cấp thật đáng nhớ, học tốt và đậu được ngành mình mong muốn."},
+
+{n:"Huỳnh Như Ngọc",p:"05012008",w:"Hí luuu, tui chúc bà Ngọc 8/3 vui vẻ nè, luôn vui vẻ và phải học thiệt giỏi nhen, hy vọng sau này tụi mình vẫn là bạn của nhau hehe. Mong bạn luôn nỗ lực hết mình cho ước mơ và không bao giờ bỏ cuộc giữa chừng."},
+
+{n:"Lâm Thanh Ngọc",p:"06062008",w:"Hé lu, chúc Thanh Ngọc 8/3 vui vẻ, luôn tươi cười và rực rỡ như những ngôi sao nhe"},
+
+{n:"Lê Gia Ngọc",p:"21072008",w:"Híii, chúc Gia Ngọc 8/3 vui vẻ nha, phải luôn hạnh phúc, tươi cười và tỏa sáng rực rỡ như những ngôi sao nhé! Mong bạn luôn nỗ lực hết mình cho ước mơ và không bao giờ bỏ cuộc giữa chừng."},
+
+{n:"Phạm Ngọc Quỳnh Như",p:"17032008",w:"Hellooo, chúc Phạm Như 8/3 vui vẻ nhen, luôn luôn xinh đẹp và tươi cười rực rỡ nhe"},
+
+{n:"Triệu Nguyễn Quỳnh Như",p:"02022008",w:"Ủa tới vịt rồi hả, thôi khỏi chúc đi, 8/3 vui vẻ bên bạn bè và người thân yêu nhé! Chúc Quỳnh Như vịt thật nhiều sức khỏe và niềm vui. Mong bạn sẽ luôn giữ được tinh thần tích cực và thành công trên con đường phía trước."},
+
+{n:"Lâm Mỹ Phương",p:"01022008",w:"Hí lu em, sau những ngày chửi nhau xối xả thì hôm nay anh phải làm hòa để chúc em có một ngày 8/3 thật vui vẻ, ấm áp, luôn tươi cười như ánh mặt trời nhé. Chúc Mỹ Phương luôn xinh đẹp và rạng rỡ. Mong em sẽ luôn tỏa sáng theo cách riêng của mình và đạt được những điều mình mơ ước."},
+
+{n:"Lê Lan Phương",p:"08102008",w:"Mấy đứa SSS Aya thì khỏi chúc dài, 8/3 vui vẻ. Chúc em luôn mạnh mẽ và tự tin, luôn giữ được sự kiên trì để chinh phục những mục tiêu lớn phía trước."},
+
+{n:"Phan Trần Bảo Quỳnh",p:"16082008",w:"Hí luuu, chúc Bảo Quỳnh 8/3 vui vẻ nhe, phải luôn luôn xinh đẹp, cười tươi, tỏa sáng rực rỡ như ánh mặt trời nhé! Chúc Bảo Quỳnh luôn hạnh phúc và tràn đầy năng lượng. Mong bạn sẽ có một năm cuối cấp thật thành công và không phải hối tiếc điều gì."},
+
+{n:"Từ Thanh Thảo",p:"13022008",w:"Chúc Thanh Thảo 8/3 vui vẻ nheee, Thảo phải luôn học chăm học giỏi, luôn xinh đẹp như những bó hoa nhé. Chúc Thanh Thảo luôn dịu dàng và ấm áp. Mong bạn sẽ luôn giữ được niềm tin vào bản thân và thi thật tốt trong kỳ thi quan trọng sắp tới."},
+
+{n:"Nguyễn Võ Đoan Thuần",p:"20052008",w:"Chúc Đoan Thuần 8/3 vui vẻ nhe, hong biết chúc gì nhiều chỉ có chúc Thuần luôn xinh đẹp, luôn tỏa sáng như những ngôi sao nhé. Chúc Đoan Thuần luôn bình an và hạnh phúc. Mong bạn sẽ luôn mạnh mẽ và vững vàng trước mọi thử thách."},
+
+{n:"Huỳnh Thái Khánh Thụy",p:"11012008",w:"Chúc Khánh Thụy 8/3 vui vẻ nha, phải luôn học chăm học giỏi, luôn xinh đẹp và ngày càng rực rỡ nhé. Chúc Khánh Thụy luôn xinh đẹp và tự tin. Mong bạn sẽ luôn có thật nhiều động lực để cố gắng và đạt được mục tiêu của mình."},
+
+{n:"Lê Phạm Ngọc Trâm",p:"28112008",w:"Ui Ngọc Trâm nè, tui không biết chúc Trâm sao nữa nhưng mà chúc Trâm 8/3 vui vẻ, luôn xinh đẹp và luôn tươi cười rực rỡ nhé. Chúc Ngọc Trâm luôn rạng rỡ và thành công. Mong bạn sẽ luôn biết trân trọng bản thân và không ngừng phát triển mỗi ngày."},
+
+{n:"Trần Thị Phương Trúc",p:"25112008",w:"Hí lu, chúc Phương Trúc 8/3 vui vẻ nhe, phải luôn xinh đẹp, cười tươi như ánh mặt trời nhé. Mong bạn sẽ luôn giữ được tinh thần lạc quan và đạt được ước mơ của mình."},
+
+{n:"Bùi Đoàn Thảo Vy",p:"27052008",w:"Ui Thảo Vy, chúc Thảo Vy 8/3 vui vẻ nè, luôn luôn xinh đẹp, ngầu lòi và ngày càng cười tươi hơn nữa nhé. Mong bạn sẽ luôn mạnh mẽ, tự tin và luôn hạnh phúc nhé."},
+
+{n:"Nguyễn Đinh Phương Uyên",p:"21022008",w:"Chúc Phương Uyên 8/3 vui vẻ nhen, chúc Uyên luôn chăm chỉ để đạt được ước mơ, luôn cười tươi và rực rỡ như những đóa hoa nhé"},
+
+{n:"Trương Thị Như Ý",p:"28062008",w:"Chúc Như Ý 8/3 vui vẻ nhen, phải luôn cố gắng và gặp được nhiều may mắn trong tương lai nha, luôn xinh đẹp và cười tươi như ánh mặt trời nhé! Chúc Như Ý đúng như cái tên của mình - mọi điều đều “như ý”. Mong bạn sẽ luôn được yêu thương và đạt được tất cả những điều mình mong muốn trong tương lai."},
+];
+
+const container=document.getElementById("container");
+
+girls.forEach((g,i)=>{
+let div=document.createElement("div");
+div.className="card";
+div.innerHTML=`
+<h3>👑 ${g.n}</h3>
+<div class="hidden" id="box${i}">
+<input type="text" id="input${i}" placeholder="Nhập ngày sinh">
+<br>
+<button onclick="check(${i})">Xác nhận</button>
+<br>
+<button onclick="goBack()" class="back-btn">
+⬅ Quay lại chọn nữ hoàng
+</button>
+</div>
+`;
+
+div.onclick=function(){
+document.querySelectorAll(".card").forEach(c=>c.classList.add("blur"));
+div.classList.remove("blur");
+div.classList.add("active");
+document.getElementById("box"+i).style.display="block";
+};
+
+container.appendChild(div);
+});
+
+function check(i){
+event.stopPropagation();
+let val=document.getElementById("input"+i).value;
+if(val===girls[i].p){
+document.getElementById("popup").classList.add("show");
+document.getElementById("popupName").innerText="🎉 "+girls[i].n;
+document.getElementById("popupWish").innerText=girls[i].w;
+firework();
+}else{
+alert("Sai mật khẩu rồi, bạn nhập lại đi 😢");
+}
+}
+
+function closePopup(){
+document.getElementById("popup").classList.remove("show");
+location.reload();
+}
+
+function playMusic(){
+document.getElementById("bgMusic").play();
+}
+
+/* 100 tim */
+for(let i=0;i<100;i++){
+let h=document.createElement("div");
+h.className="heart";
+h.innerHTML="💖";
+h.style.left=Math.random()*100+"vw";
+h.style.fontSize=(15+Math.random()*20)+"px";
+h.style.animationDuration=(3+Math.random()*5)+"s";
+document.body.appendChild(h);
+}
+
+/* 30 bóng */
+for(let i=0;i<30;i++){
+let b=document.createElement("div");
+b.className="balloon";
+b.innerHTML="🎈";
+b.style.left=Math.random()*100+"vw";
+b.style.animationDuration=(6+Math.random()*6)+"s";
+document.body.appendChild(b);
+}
+
+function firework(){
+for(let i=0;i<40;i++){
+let s=document.createElement("div");
+s.innerHTML="✨";
+s.style.position="fixed";
+s.style.left="50%";
+s.style.top="50%";
+s.style.fontSize="25px";
+s.style.transform=`translate(${Math.random()*500-250}px,${Math.random()*500-250}px)`;
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),1000);
+}
+}
+function goBack(){
+location.reload();
+}
+function closeWish() 
+{
+document.getElementById("wishBox").style.display = "none";
+document.getElementById("queenSelection").style.display = "grid";
+}
+function toggleMusic() {
+    const music = document.getElementById("bgMusic");
+    const btn = document.querySelector(".music-btn");
+
+    if (music.paused) {
+        music.play();
+        btn.innerHTML = "🎵 Tắt nhạc";
+    } else {
+        music.pause();
+        btn.innerHTML = "🔇 Bật nhạc";
+    }
+}
+</script>
+</body>
+</html>
